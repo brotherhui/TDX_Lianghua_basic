@@ -2,9 +2,6 @@ import pandas as pd
   
 # python程序一行一行的读取含有KDJ，Close的日线数据， 
 # 每一轮收益以后， 拿走中间过程中追加的本金， 用盈利和初始的10000本金，继续滚动
-# 如果前期出现过D<20 也出现过J<0， 等出现金叉买入1000股，  ！！！ 可能需要考虑到市盈率， 不能太高买入的时候， 待实现
-# 如果之后J一直小于100, 等J每次小于0，之后每次出现金叉， 并且价格低于最初的买入价格的时候，补同样的股数。
-# 如果J>100 并且股票价格大于平均价格， 卖出一半股票， 然后等死叉后将剩余的全部卖出. 
 # 返回所有的买入时间，价格，股票数， 和卖出时间，价格，股票数。 并计算总收益
 
 # 假设数据文件名为'stock_data.csv'，包含列'Date', 'K', 'D', 'J', 'Close'  
@@ -101,11 +98,9 @@ for i in range(1, len(df)):
         round_cash_earn_total = 0
         round_earn_percent_current = 0
       
-    # 检查D<20和J<0的条件, 前期出现过20即可， 并不能每次都设置
     if row['D'] < 20:  
         d_below_20_flag = True  
 
-    # D>50的， J<100的也值得一试，说明很好的上升趋势， 短期回调太大
     if row['D'] > 50:  
         d_above_50_flag = True 
 
@@ -129,11 +124,7 @@ for i in range(1, len(df)):
         #     falling_trend = True  
 
 
-    # 金叉买入逻辑 ,  这是探底的状态, 
-    # 但是有时候形态无法判断是否高位， 比如601888的2022年6月30那个月， 底部金叉， 
-    # 但是股价特别高， 后来又大跌到2024年2月29再次金叉， 需要额外条件判断!!!!!!!
-    # 另外，还有一种形态的金叉似乎也可以买入， 就是J<0, D特别高大于50 比如601888 5月29那个月
-    if (d_below_20_flag or d_above_50_flag) and j_below_0_flag and row['K'] > prev_row['D'] and row['D'] > prev_row['D'] and not gc_flag:  
+    if j_below_0_flag and row['K'] > prev_row['D'] and row['D'] > prev_row['D'] and not gc_flag:  
         buy_price = row['Close'] 
         if buy_price == 0:  
             print("错误：购买价格为零，无法计算能买入的股票数量。")  
@@ -170,8 +161,7 @@ for i in range(1, len(df)):
         gc_flag = True
         # falling_trend = False
       
-    # J<0后每次金叉补仓逻辑, 防止踏空逻辑， 这个J可以适当调整为3或者5
-    elif j_below_5_flag and row['K'] > prev_row['D'] and row['D'] > prev_row['D'] and round_shares_price_initial > row['Close'] and gc_flag:  
+    elif row['K'] > prev_row['D'] and row['D'] > prev_row['D'] and round_shares_price_initial > row['Close'] and gc_flag:  
         buy_price = row['Close']   
         shares_to_buy = round_shares_num_initial  # 补仓相同的仓位 
         transaction_fee = round(shares_to_buy * buy_price,1)
@@ -211,8 +201,7 @@ for i in range(1, len(df)):
     #     print(f"..获利时间: {row['Date']}, 卖出价格: {sell_price}, 卖出数: {shares_to_sell}, 本次获利： {transaction_fee}, 剩余股数: {round_shares_holding_num}, 剩余持有价值: {round_shares_price_total}")
     #     # 不需要重置任何标记，因为可能再次卖出或买入  
       
-    # 高位死叉全部卖出逻辑, 从J>100以后， 死叉且价格大于均价
-    elif round_shares_holding_num > 0 and row['K'] < prev_row['D'] and row['D'] < prev_row['D'] and gc_flag and j_peak_flag and row['Close'] > round_shares_holding_avg_price:  
+    elif round_shares_holding_num > 0  and gc_flag and j_peak_flag and row['Close'] > round_shares_holding_avg_price:  
         # print(f"",str(row['K']),str(row['D']),str(row['J']),{row['Date']})
         sell_price = row['Close']   
         shares_to_sell = round_shares_holding_num  # 卖出剩余股票 
