@@ -61,3 +61,6 @@ You might also try these unofficial windows binaries for both 32-bit and 64-bit:
 #通达信下载的.day数据时没有复权的， 计算不够准确， 配套的代码可以用来参考
 1. 日线
 python tdx_daytocsv.py SH DAY 
+
+2. 历史验证
+python test6.py 可以根据我的量化标准，验证
