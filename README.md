@@ -1,7 +1,6 @@
 # TDX_Lianghua_basic
 ------------------如果大家觉得好， 请给个星------------------
 
-
 仅仅用来记录下最初研究量化的代码， 数据是通达信免费下的日线前复权数据， 初学者可以简单参考一下思路 
 
 通达信的数据下载在这里
@@ -17,15 +16,13 @@ D:\new_tdx\T0002\export
 -- YYYY-MM-DD
 
 
-新版量化程序在私仓，主要用来验证策略的历史战绩， 暂时不放出来了
+
 
 
 # 安装
 
 建议安装python 3.12...
-
 python -m pip install --upgrade pip
-
 pip install -r requirements.txt
 
 
@@ -63,4 +60,4 @@ You might also try these unofficial windows binaries for both 32-bit and 64-bit:
 python tdx_daytocsv.py SH DAY 
 
 2. 历史验证
-python test6.py 可以根据我的量化标准，验证
+python test6.py 跑历史数据，验证策略， 大概看下思路， 以后扩展把
